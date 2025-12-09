@@ -1,0 +1,181 @@
+@startuml BloodDonationSystemSimple
+
+!theme plain
+skinparam classAttributeIconSize 0
+
+' Core Model Classes
+class User {
+  - id: int
+  - username: String
+  - password: String
+  - role: String
+  - email: String
+  - phone: String
+  - status: String
+  - createdAt: Timestamp
+}
+
+class Donor {
+  - id: int
+  - userId: int
+  - name: String
+  - age: int
+  - gender: String
+  - bloodGroup: String
+  - weight: double
+  - healthInfo: String
+  - lastDonationDate: Date
+  - status: String
+  + isEligibleForDonation(): boolean
+}
+
+class Hospital {
+  - id: int
+  - userId: int
+  - hospitalName: String
+  - hospitalType: String
+  - address: String
+  - contactPerson: String
+  - contactPhone: String
+  - status: String
+  + isActive(): boolean
+}
+
+class Appointment {
+  - id: int
+  - donorId: int
+  - campId: int
+  - appointmentDate: Date
+  - status: String
+  - timeSlot: String
+  - notes: String
+  + isPending(): boolean
+  + isApproved(): boolean
+}
+
+class DonationCamp {
+  - id: int
+  - campName: String
+  - location: String
+  - campDate: Date
+  - maxDonors: int
+  - currentDonors: int
+  - status: String
+  + isActive(): boolean
+}
+
+class BloodStock {
+  - id: int
+  - bloodGroup: String
+  - quantity: int
+  - expiryDate: Date
+  - status: String
+  - donorId: int
+  + isExpired(): boolean
+  + isUsable(): boolean
+}
+
+class BloodRequest {
+  - id: int
+  - hospitalId: int
+  - bloodGroup: String
+  - quantity: int
+  - urgency: String
+  - status: String
+  - patientName: String
+  + isPending(): boolean
+}
+
+class Notification {
+  - id: int
+  - userId: int
+  - message: String
+  - type: String
+  - status: String
+  - isRead: boolean
+  + markAsRead(): void
+}
+
+' Key DAO Classes
+class UserDAO {
+  + addUser(User): void
+  + getUserById(int): User
+  + authenticateUser(String, String): User
+}
+
+class DonorDAO {
+  + addDonor(Donor): void
+  + getDonorById(int): Donor
+  + getEligibleDonors(): List<Donor>
+}
+
+class AppointmentDAO {
+  + addAppointment(Appointment): void
+  + getAppointmentsByDonor(int): List<Appointment>
+  + getPendingAppointments(): List<Appointment>
+}
+
+class BloodStockDAO {
+  + addBloodStock(BloodStock): void
+  + getBloodStockByGroup(String): List<BloodStock>
+  + getUsableBloodStock(): List<BloodStock>
+}
+
+' Key Service Classes
+class DonorService {
+  - donorDAO: DonorDAO
+  + registerDonor(Donor): boolean
+  + checkEligibility(int): boolean
+}
+
+class AppointmentService {
+  - appointmentDAO: AppointmentDAO
+  + bookAppointment(Appointment): boolean
+  + approveAppointment(int, int): boolean
+}
+
+class BloodStockService {
+  - bloodStockDAO: BloodStockDAO
+  + addBloodStock(BloodStock): boolean
+  + checkLowStock(): void
+}
+
+' Utility Classes
+class DatabaseUtil {
+  + getConnection(): Connection {static}
+}
+
+class EmailUtil {
+  + sendEmail(String, String, String): boolean {static}
+}
+
+' Relationships
+User ||--o{ Donor : "1 to 0..1"
+User ||--o{ Hospital : "1 to 0..1"
+User ||--o{ Notification : "1 to many"
+
+Donor ||--o{ Appointment : "1 to many"
+Donor ||--o{ BloodStock : "1 to many"
+
+Hospital ||--o{ BloodRequest : "1 to many"
+
+DonationCamp ||--o{ Appointment : "1 to many"
+
+' DAO Dependencies
+UserDAO ..> User : uses
+DonorDAO ..> Donor : uses
+AppointmentDAO ..> Appointment : uses
+BloodStockDAO ..> BloodStock : uses
+
+' Service Dependencies
+DonorService ..> DonorDAO : uses
+AppointmentService ..> AppointmentDAO : uses
+BloodStockService ..> BloodStockDAO : uses
+
+' All DAOs use DatabaseUtil
+UserDAO ..> DatabaseUtil : uses
+DonorDAO ..> DatabaseUtil : uses
+AppointmentDAO ..> DatabaseUtil : uses
+BloodStockDAO ..> DatabaseUtil : uses
+
+@enduml

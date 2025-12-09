@@ -1,0 +1,2 @@
+USE blood_donation_system1;
+ALTER TABLE alerts MODIFY COLUMN severity ENUM('LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 'URGENT') NOT NULL DEFAULT 'MEDIUM';
