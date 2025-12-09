@@ -7,9 +7,9 @@ import java.util.Properties;
 public class EmailUtil {
     
     private static final String SMTP_HOST = "smtp.gmail.com";
-    private static final String SMTP_PORT = "587";
-    private static final String EMAIL_USER = "blooddonationsystem1@gmail.com";
-    private static final String EMAIL_PASSWORD = "kbosjmunqwddgqjt"; // Gmail App Password for blooddonationsystem1@gmail.com
+    private static final String SMTP_PORT = "xxx";
+    private static final String EMAIL_USER = "blooddon@gmail.com";
+    private static final String EMAIL_PASSWORD = "xxxxxxxx"; /
     
     public static boolean sendAlertEmail(String alertTitle, String alertMessage) {
         try {
